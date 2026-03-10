@@ -14,6 +14,7 @@ export function ChatViewer({ chat, chatName, onBack }: ChatViewerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSender, setSelectedSender] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(false);
+  const [meUser, setMeUser] = useState<string>(chat.senders.length > 1 ? chat.senders[1] : chat.senders[0]);
 
   const filteredMessages = useMemo(() => {
     return chat.messages.filter(msg => {
@@ -73,8 +74,7 @@ export function ChatViewer({ chat, chatName, onBack }: ChatViewerProps) {
       );
     }
 
-    const senderIndex = chat.senders.indexOf(msg.sender);
-    const isMe = senderIndex === 1; // Arbitrary choice for "me"
+    const isMe = msg.sender === meUser;
 
     return (
       <div className="flex flex-col px-4">
@@ -220,6 +220,19 @@ export function ChatViewer({ chat, chatName, onBack }: ChatViewerProps) {
             </button>
           ))}
         </div>
+        
+        <div className="flex items-center gap-2 ml-auto border-l border-gray-200 pl-3">
+          <span className="text-xs font-medium text-gray-500 whitespace-nowrap">My Side:</span>
+          <select
+            value={meUser}
+            onChange={(e) => setMeUser(e.target.value)}
+            className="text-xs bg-gray-100 border-transparent rounded-full px-3 py-1 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none cursor-pointer max-w-[120px] truncate"
+          >
+            {chat.senders.map(sender => (
+              <option key={sender} value={sender}>{sender}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -230,9 +243,11 @@ export function ChatViewer({ chat, chatName, onBack }: ChatViewerProps) {
             <Virtuoso
               data={filteredMessages}
               itemContent={renderMessage}
-              className="h-full w-full"
+              className="h-full w-full scroll-smooth"
               initialTopMostItemIndex={filteredMessages.length - 1}
               followOutput="smooth"
+              increaseViewportBy={800}
+              defaultItemHeight={80}
             />
           ) : (
             <div className="h-full flex items-center justify-center text-gray-500">
