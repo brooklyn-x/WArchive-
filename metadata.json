@@ -1,0 +1,5 @@
+{
+  "name": "Secure WhatsApp Chat Viewer",
+  "description": "A privacy-focused chat viewer that parses, encrypts, and displays exported WhatsApp chats locally.",
+  "requestFramePermissions": []
+}
